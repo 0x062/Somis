@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { ethers } from "ethers";
+import { sendTelegramReport } from './telegramreporter.js';
 
-// ... (semua konstanta dan setup awal tetap sama seperti sebelumnya) ...
 const RPC_URL = process.env.RPC_URL_SOMNIA_TESTNET;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const USDTG_ADDRESS = process.env.USDTG_ADDRESS;
