@@ -24,8 +24,8 @@ const ROUTER_ABI = [
 ];
 
 const randomAmountRanges = {
-  "STT_USDTG": { STT: { min: 0.01, max: 0.05 }, USDTG: { min: 0.04, max: 0.21 } },
-  "STT_NIA": { STT: { min: 0.01, max: 0.05 }, NIA: { min: 2, max: 10 } }
+  "STT_USDTG": { STT: { min: 0.001, max: 0.002 }, USDTG: { min: 0.004, max: 0.005 } },
+  "STT_NIA": { STT: { min: 0.001, max: 0.002 }, NIA: { min: 0.1, max: 1 } }
 };
 
 const globalHeaders = {
