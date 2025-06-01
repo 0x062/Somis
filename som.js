@@ -27,8 +27,14 @@ const ROUTER_ABI = [
 ];
 
 const randomAmountRanges = {
-  "STT_USDTG": { STT: { min: 0.001, max: 0.002 }, USDTG: { min: 0.004, max: 0.005 } },
-  "STT_NIA": { STT: { min: 0.001, max: 0.002 }, NIA: { min: 0.001, max: 0.002 } }
+  "STT_USDTG": { 
+    STT:   { min: 0.01, max: 0.05 },   // Jumlah STT yang dijual/dibeli
+    USDTG: { min: 0.2, max: 1.0 }    // Jumlah USDTG yang dijual/dibeli (lebih signifikan)
+  },
+  "STT_NIA": { 
+    STT:   { min: 0.01, max: 0.05 },   // Jumlah STT yang dijual/dibeli
+    NIA:   { min: 0.5, max: 2.5 }      // Jumlah NIA yang dijual/dibeli (lebih signifikan)
+  }
 };
 
 const globalHeaders = {
@@ -400,8 +406,8 @@ async function main() {
 
   await updateWalletData(); // Panggil sekali di awal
 
-  const iterationsSttUsdtg = 2; // << Ganti dengan nilai iterasi yang diinginkan
-  const iterationsSttNia = 2;   // << Ganti dengan nilai iterasi yang diinginkan
+  const iterationsSttUsdtg = 10; // << Ganti dengan nilai iterasi yang diinginkan
+  const iterationsSttNia = 10;   // << Ganti dengan nilai iterasi yang diinginkan
   const enableSttUsdtgSwap = true;
   const enableSttNiaSwap = true;
 
