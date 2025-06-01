@@ -384,7 +384,7 @@ async function autoSwapSttNia() {
 
 async function main() {
   addLog("Memulai skrip otomatis (versi STT awet)...", "system");
-  addLog("Jangan Lupa Subscribe YT Dan Telegram @NTExhaust!! :D", "system");
+  addLog("Ini versi recode dari @NTExhaust!! :D", "system");
 
   if (!RPC_URL || !PRIVATE_KEY || !USDTG_ADDRESS || !NIA_ADDRESS) {
     addLog("Variabel environment penting belum diatur. Cek file .env Anda.", "error");
