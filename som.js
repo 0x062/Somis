@@ -489,8 +489,8 @@ async function main() {
 
   await updateWalletData(); // Panggil sekali di awal
 
-  const iterationsSttUsdtg = 10; // Sesuaikan jumlah iterasi
-  const iterationsSttNia = 10;   // Sesuaikan jumlah iterasi
+  const iterationsSttUsdtg = 7; // Sesuaikan jumlah iterasi
+  const iterationsSttNia = 7;   // Sesuaikan jumlah iterasi
   const enableSttUsdtgSwap = true;
   const enableSttNiaSwap = true;
   const delayBetweenSweeps = 5000; // Jeda 5 detik antar sweep token (opsional)
