@@ -379,44 +379,47 @@ async function autoSwapSttNia() {
 async function main() {
   addLog("Memulai skrip otomatis (versi STT awet)...", "system");
   addLog("Jangan Lupa Subscribe YT Dan Telegram @NTExhaust!! :D", "system");
-  
+
   if (!RPC_URL || !PRIVATE_KEY || !USDTG_ADDRESS || !NIA_ADDRESS) {
     addLog("Variabel environment penting belum diatur. Cek file .env Anda.", "error");
+    const errorMsg = "Variabel environment penting belum diatur. Skrip berhenti.";
+    // Coba kirim notifikasi error, abaikan jika gagal karena fokus utama adalah keluar
+    try { await sendTelegramReport(`🔴 ERROR PENTING 🔴\n${errorMsg}`); } catch (e) { /* abaikan error telegram di sini */ }
     process.exit(1);
   }
-  
-  // Inisialisasi awal provider dan wallet
+
   try {
     provider = new ethers.JsonRpcProvider(RPC_URL);
     globalWallet = new ethers.Wallet(PRIVATE_KEY, provider);
   } catch (e) {
     addLog(`Koneksi RPC atau Private Key bermasalah: ${e.message}`, "error");
+    const errorMsg = `Koneksi RPC atau Private Key bermasalah: ${e.message}. Skrip berhenti.`;
+    try { await sendTelegramReport(`🔴 ERROR PENTING 🔴\n${errorMsg}`); } catch (e) { /* abaikan error telegram di sini */ }
     process.exit(1);
   }
 
+  await updateWalletData(); // Panggil sekali di awal
 
-  await updateWalletData(); // Panggil sekali di awal untuk memastikan saldo ada
-
-  const iterationsSttUsdtg = 6; // Atur jumlah iterasi yang diinginkan
-  const iterationsSttNia = 6;   // Atur jumlah iterasi yang diinginkan
+  const iterationsSttUsdtg = 2; // << Ganti dengan nilai iterasi yang diinginkan
+  const iterationsSttNia = 2;   // << Ganti dengan nilai iterasi yang diinginkan
   const enableSttUsdtgSwap = true;
   const enableSttNiaSwap = true;
 
-  if (enableSttUsdtgSwap) {
+  // --- Blok Loop STT/USDTG ---
+  if (enableSttUsdtgSwap && !swapCancelled) {
     addLog(`[LOOP STT/USDTG] Memulai ${iterationsSttUsdtg} iterasi.`, "system");
     for (let i = 1; i <= iterationsSttUsdtg; i++) {
       if (swapCancelled) { addLog(`[LOOP STT/USDTG] Dibatalkan.`, "warning"); break; }
       addLog(`[LOOP STT/USDTG] Iterasi ke-${i} dari ${iterationsSttUsdtg}`, "system");
       
       const success = await autoSwapSttUsdtg();
-      // updateWalletData sudah dipanggil di awal autoSwapSttUsdtg
       
       if (!success) {
         addLog(`[LOOP STT/USDTG] Iterasi ke-${i} tidak ada transaksi berhasil/dilewati.`, "info");
       }
 
       if (i < iterationsSttUsdtg && !swapCancelled) {
-        const delayTime = getRandomDelay();
+        const delayTime = getRandomDelay(); 
         const minutes = Math.floor(delayTime / 60000);
         const seconds = Math.floor((delayTime % 60000) / 1000);
         addLog(`[LOOP STT/USDTG] Menunggu ${minutes}m ${seconds}d...`, "system");
@@ -433,7 +436,6 @@ async function main() {
       addLog(`[LOOP STT/NIA] Iterasi ke-${i} dari ${iterationsSttNia}`, "system");
       
       const success = await autoSwapSttNia();
-      // updateWalletData sudah dipanggil di awal autoSwapSttNia
       
       if (!success) {
         addLog(`[LOOP STT/NIA] Iterasi ke-${i} tidak ada transaksi berhasil/dilewati.`, "info");
@@ -450,11 +452,60 @@ async function main() {
     addLog(`[LOOP STT/NIA] Selesai.`, "system");
   }
 
-  addLog("Semua task swap otomatis selesai.", "system");
+  addLog("Semua task swap otomatis selesai. Mengirim laporan akhir...", "system");
+
+  await updateWalletData();
+
+  const shortAddress = getShortAddress(walletInfo.address);
+  const stt = Number(walletInfo.balanceStt || 0).toFixed(4);
+  const usdtg = Number(walletInfo.balanceUsdtg || 0).toFixed(2);
+  const nia = Number(walletInfo.balanceNia || 0).toFixed(4);
+
+  const finalReportMessage = `
+✅ *Laporan Akhir Sesi Swap* ✅
+--------------------------------------
+Wallet: \`${shortAddress}\`
+Network: ${NETWORK_NAME}
+--------------------------------------
+*Saldo Akhir:*
+STT    : \`${stt}\`
+USDT.g : \`${usdtg}\`
+NIA    : \`${nia}\`
+--------------------------------------
+Poin   : ${walletInfo.points}
+Rank   : ${walletInfo.rank}
+--------------------------------------
+Semua iterasi telah selesai.
+`;
+
+  try {
+    const reportSent = await sendTelegramReport(finalReportMessage);
+    if (reportSent) {
+      addLog("Laporan akhir berhasil dikirim ke Telegram.", "success");
+    } else {
+      addLog("Gagal mengirim laporan akhir ke Telegram (fungsi reporter mengembalikan false/null).", "warning");
+    }
+  } catch (e) {
+    addLog(`Gagal mengirim laporan akhir ke Telegram karena error: ${e.message}`, "error");
+  }
+  
   process.exit(0);
 }
 
-main().catch(error => {
-  addLog(`Error fatal: ${error.message}${error.stack ? `\nStack: ${error.stack}` : ''}`, "error");
+
+main().catch(async (error) => {
+  addLog(`Error fatal tidak tertangani di main: ${error.message}${error.stack ? `\nStack: ${error.stack}` : ''}`, "error");
+  const fatalErrorMessage = `
+🔴 *ERROR FATAL PADA SKRIP* 🔴
+--------------------------------------
+Pesan: ${error.message}
+--------------------------------------
+Mohon periksa log konsol untuk detail. Skrip berhenti.
+`;
+  try {
+    await sendTelegramReport(fatalErrorMessage);
+  } catch (e) {
+    addLog(`Gagal mengirim notifikasi error fatal ke Telegram: ${e.message}`, "error");
+  }
   process.exit(1);
 });
