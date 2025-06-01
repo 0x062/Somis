@@ -33,7 +33,7 @@ const randomAmountRanges = {
   },
   "STT_NIA": { 
     STT:   { min: 0.01, max: 0.05 },   // Jumlah STT yang dijual/dibeli
-    NIA:   { min: 0.5, max: 2.5 }      // Jumlah NIA yang dijual/dibeli (lebih signifikan)
+    NIA:   { min: 1, max: 10 }      // Jumlah NIA yang dijual/dibeli (lebih signifikan)
   }
 };
 
