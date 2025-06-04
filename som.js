@@ -128,7 +128,7 @@ async function updateWalletData() {
     walletInfo.balanceUsdtg = await getTokenBalance(USDTG_ADDRESS);
     walletInfo.balanceNia = await getTokenBalance(NIA_ADDRESS);
 
-    const apiUrl = `https://api.somnia.exchange/api/leaderboard?wallet=${globalWallet.address}`;
+    const apiUrl = `https://api-node.somnia.exchange/api/leaderboard?wallet=${globalWallet.address}`;
     const response = await fetch(apiUrl, { headers: globalHeaders });
     if (response.ok) {
       const data = await response.json();
