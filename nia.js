@@ -152,7 +152,9 @@ async function main() {
     // Inisialisasi provider dan wallet
     try {
         if (!config.rpcUrl || !config.privateKey) throw new Error("RPC_URL atau PRIVATE_KEY tidak ada di file .env");
-        provider = new ethers.JsonRpcProvider(config.rpcUrl);
+        provider = new ethers.JsonRpcProvider(config.rpcUrl, undefined,{
+            timeout: 20000 
+        });
         wallet = new ethers.Wallet(config.privateKey, provider);
         const network = await provider.getNetwork();
         logger.success(`Terhubung ke ${network.name}. Wallet: ${wallet.address}`);
