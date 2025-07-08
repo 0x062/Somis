@@ -19,8 +19,8 @@ const config = {
 
     // --- Pengaturan Jumlah Swap ---
     amountRanges: {
-        stt: { min: 0.01, max: 0.05 },
-        nia: { min: 1, max: 10 }
+        stt: { min: 0.2, max: 1 },
+        nia: { min: 10, max: 100 }
     }
 };
 
